@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using InMemoryApp.Web.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 
 
@@ -71,12 +72,24 @@ public class ProductController : Controller
 			});
 
 
+			// Complex Type Caching Proses
+			{
+				Product p = new Product
+				{
+					Id = 1,
+					Name = "Kalem",
+					Price = 200
+				};
+
+				// Complex Type write Cache
+				_memoryCache.Set<Product>("product:1", p);
+			}
+
 			_memoryCache.Set<string>("Zaman", DateTime.Now.ToString(), cacheOptions);
 		}
 
 		{
 			// Cache-den melumati silmek
-
 			// _memoryCache.Remove("Zaman");
 		}
 
@@ -97,8 +110,14 @@ public class ProductController : Controller
 
 		_memoryCache.TryGetValue<string>("Zaman", out string zamanCache);
 		_memoryCache.TryGetValue<string>("callBack", out string callBack);
-		ViewBag.callback = callBack;
+
 		ViewBag.zaman = zamanCache;
+		ViewBag.callback = callBack;
+
+		// Complex type -i cache-den oxuyub, view-a oturmek
+		{
+			ViewBag.product = _memoryCache.Get<Product>("product:1");
+		}
 
 		return View();
 	}
