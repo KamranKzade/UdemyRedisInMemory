@@ -48,8 +48,8 @@ public class ProductController : Controller
 			//											  sliding erzinde data cacheden silinmese,
 			//											  absolute uygun olaraq o vaxt silinecek.
 
-			cacheOptions.SlidingExpiration = TimeSpan.FromSeconds(10);
-			cacheOptions.AbsoluteExpiration = DateTime.Now.AddMinutes(10);
+			cacheOptions.SlidingExpiration = TimeSpan.FromSeconds(3);
+			cacheOptions.AbsoluteExpiration = DateTime.Now.AddSeconds(10);
 
 			{
 				// Cache Priority --> Silinme ardicilligi asagidaki kimidir.
@@ -59,8 +59,16 @@ public class ProductController : Controller
 				// cacheOptions.Priority = CacheItemPriority.High;
 				// cacheOptions.Priority = CacheItemPriority.NeverRemove;
 			}
-			cacheOptions.Priority = CacheItemPriority.Low;
+			cacheOptions.Priority = CacheItemPriority.High;
 
+
+			// RegisterPostEvictionCallback ==> Cache - dan silinenlerin silinme sebebini gosterirki,
+			//									hansi sebebden silinib.
+
+			cacheOptions.RegisterPostEvictionCallback((key, value, reason, state) =>
+			{
+				_memoryCache.Set("callBack", $"{key}--> {value} ==> Sebeb: {reason}");
+			});
 
 
 			_memoryCache.Set<string>("Zaman", DateTime.Now.ToString(), cacheOptions);
@@ -88,6 +96,8 @@ public class ProductController : Controller
 		}
 
 		_memoryCache.TryGetValue<string>("Zaman", out string zamanCache);
+		_memoryCache.TryGetValue<string>("callBack", out string callBack);
+		ViewBag.callback = callBack;
 		ViewBag.zaman = zamanCache;
 
 		return View();
