@@ -29,8 +29,12 @@ public class ProductController : Controller
 
 		if (!_memoryCache.TryGetValue<string>("Zaman", out string zamanCache))
 		{
-
 			MemoryCacheEntryOptions cacheOptions = new MemoryCacheEntryOptions();
+
+			{
+				// Expiration vermeden Set etmek
+				// _memoryCache.Set<string>("Zaman", DateTime.Now.ToString());
+			}
 
 			{
 				// AbsoluteExpiration elave etmek 
@@ -48,9 +52,16 @@ public class ProductController : Controller
 			cacheOptions.AbsoluteExpiration = DateTime.Now.AddMinutes(10);
 
 			{
-				// Expiration vermeden Set etmek
-				// _memoryCache.Set<string>("Zaman", DateTime.Now.ToString());
+				// Cache Priority --> Silinme ardicilligi asagidaki kimidir.
+
+				// cacheOptions.Priority = CacheItemPriority.Low;
+				// cacheOptions.Priority = CacheItemPriority.Normal;
+				// cacheOptions.Priority = CacheItemPriority.High;
+				// cacheOptions.Priority = CacheItemPriority.NeverRemove;
 			}
+			cacheOptions.Priority = CacheItemPriority.Low;
+
+
 
 			_memoryCache.Set<string>("Zaman", DateTime.Now.ToString(), cacheOptions);
 		}
