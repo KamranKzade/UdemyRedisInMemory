@@ -5,7 +5,7 @@ namespace InMemoryApp.Web.Controllers
 {
 	public class ProductController : Controller
 	{
-		private  IMemoryCache _memoryCache;
+		private IMemoryCache _memoryCache;
 
 		public ProductController(IMemoryCache memoryCache)
 		{
