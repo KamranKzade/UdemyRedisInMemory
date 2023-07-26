@@ -1,8 +1,8 @@
-﻿using IDistributedCacheRedisApp.Web.Models;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Distributed;
+﻿using System.Text;
 using Newtonsoft.Json;
-using System.Text;
+using Microsoft.AspNetCore.Mvc;
+using IDistributedCacheRedisApp.Web.Models;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace IDistributedCacheRedisApp.Web.Controllers;
 
@@ -15,7 +15,6 @@ public class ProductsController : Controller
 	{
 		_distributedCache = distributedCache;
 	}
-
 
 	public async Task<IActionResult> Index()
 	{
@@ -89,5 +88,29 @@ public class ProductsController : Controller
 		_distributedCache.Remove("product:1");
 
 		return View();
+	}
+
+	public IActionResult ImageCache()
+	{
+		// Cache-e omur veririk
+		var cacheEntryOptions = new DistributedCacheEntryOptions();
+		cacheEntryOptions.AbsoluteExpiration = DateTime.Now.AddMinutes(10);
+
+		// Path-i aliriq 
+		string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/download.jpg");
+
+		// Path byte arrayine ceviririk
+		byte[] imageByte = System.IO.File.ReadAllBytes(path);
+		_distributedCache.Set("resim", imageByte, cacheEntryOptions);
+
+		return View();
+	}
+
+	public IActionResult ImageUrl()
+	{
+		// Redisde olan sekili byte[] ceviririk
+		var byteImage = _distributedCache.Get("resim");
+
+		return File(byteImage, "image/jpg");
 	}
 }
