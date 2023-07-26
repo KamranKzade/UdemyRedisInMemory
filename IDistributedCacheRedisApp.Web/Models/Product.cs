@@ -1,5 +1,6 @@
 ﻿namespace IDistributedCacheRedisApp.Web.Models;
 
+
 public class Product
 {
 	public int Id { get; set; }
