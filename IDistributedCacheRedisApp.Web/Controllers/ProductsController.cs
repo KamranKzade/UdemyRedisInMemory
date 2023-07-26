@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using IDistributedCacheRedisApp.Web.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
-
+using Newtonsoft.Json;
+using System.Text;
 
 namespace IDistributedCacheRedisApp.Web.Controllers;
 
@@ -20,37 +22,72 @@ public class ProductsController : Controller
 		// Cache optionlar vermek ucun istifade edirik, yasam omru, prioriteti ve s.
 
 		DistributedCacheEntryOptions cacheEntryOptions = new DistributedCacheEntryOptions();
-		cacheEntryOptions.AbsoluteExpiration = DateTime.Now.AddMinutes(1);
+		cacheEntryOptions.AbsoluteExpiration = DateTime.Now.AddMinutes(10);
 
-		// Redis-e data elave edirik.
-		// _distributedCache.SetString("name", "kamran", cacheEntryOptions);
+		// Sade tiplerin redise elave edilmesi
+		{
+			// Redis-e data elave edirik.
+			// _distributedCache.SetString("name", "kamran", cacheEntryOptions);
 
-		// Redis-e data elave edirik (asinxron).
-		await _distributedCache.SetStringAsync("surname", "karimzada", cacheEntryOptions);
+			// Redis-e data elave edirik (asinxron).
+			// await _distributedCache.SetStringAsync("surname", "karimzada", cacheEntryOptions);
+		}
+
+		// Complex tiplerin Redis-e yazilmasi
+		Product product = new Product { Id = 2, Name = "Karandas", Price = 150 };
+
+		// JsonFormati ile yazmaq
+		string jsonProduct = JsonConvert.SerializeObject(product);
+		// await _distributedCache.SetStringAsync($"product:{product.Id}", jsonProduct, cacheEntryOptions);
+
+		// Byte arrayina ceviririb, yazmaq
+		Byte[] byteProduct = Encoding.UTF8.GetBytes(jsonProduct);
+		await _distributedCache.SetAsync("product:1", byteProduct);
 
 		return View();
 	}
 
 	public async Task<IActionResult> Show()
 	{
-		// Redis-de olan data elde edirik.
-		// string name = _distributedCache.GetString("name");
+		// Sade tiplerin redisden oxunmasi
+		{
+			// Redis-de olan data elde edirik.
+			// string name = _distributedCache.GetString("name");
 
-		// Redis-de olan data elde edirik(asinxron).
-		string name = await _distributedCache.GetStringAsync("surname");
+			// Redis-de olan data elde edirik(asinxron).
+			// string name = await _distributedCache.GetStringAsync("surname");
+		}
 
 
-		ViewBag.Name = name;
+
+		// Complex tiplerin Redis-e oxunmasi(Json vasitesi ile)
+		// string jsonProduct = await _distributedCache.GetStringAsync("product:1");
+		// JsonDeserialize vasitesile class-a menimsetme 
+		// Product p = JsonConvert.DeserializeObject<Product>(jsonProduct)!;
+
+		// Complex tiplerin Redis-e oxunmasi(byte arrayi kimi)
+		Byte[] bytes = _distributedCache.Get("product:1");
+		var byteToString = Encoding.UTF8.GetString(bytes);
+		Product p = JsonConvert.DeserializeObject<Product>(byteToString)!;
+
+		ViewBag.Product = p;
 		return View();
 	}
 
 	public async Task<IActionResult> Remove()
 	{
-		// Redis - de olan data silirik.
-		// _distributedCache.Remove("name");
-		
-		// Redis - de olan data silirik(asinxron).
-		await _distributedCache.RemoveAsync("surname");
+		// Sade tiplerin redisden silinmesi
+		{
+			// Redis - de olan data silirik.
+			// _distributedCache.Remove("name");
+
+			// Redis - de olan data silirik(asinxron).
+			//await _distributedCache.RemoveAsync("surname");
+		}
+
+		// Complex tiplerin redisden silinmesi
+		_distributedCache.Remove("product:1");
+
 		return View();
 	}
 }
