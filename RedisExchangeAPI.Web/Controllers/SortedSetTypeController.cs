@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using StackExchange.Redis;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using RedisExchangeAPI.Web.Services;
@@ -9,19 +8,9 @@ using RedisExchangeAPI.Web.Services;
 namespace RedisExchangeAPI.Web.Controllers;
 
 
-public class SortedSetTypeController : Controller
+public class SortedSetTypeController : BaseController
 {
-	private readonly IDatabase db;
-	private string listKey = "SortedSetname";
-	private readonly RedisService _redisService;
-
-
-	public SortedSetTypeController(RedisService redisService)
-	{
-		_redisService = redisService;
-		db = redisService.GetDb(3);
-	}
-
+	public SortedSetTypeController(RedisService redisService) : base(redisService) { }
 
 	public IActionResult Index()
 	{

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using StackExchange.Redis;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -10,23 +9,15 @@ using RedisExchangeAPI.Web.Services;
 namespace RedisExchangeAPI.Web.Controllers;
 
 
-public class SetTypeController : Controller
+public class SetTypeController : BaseController
 {
-	private readonly IDatabase _db;
-	private string listKey = "SetName";
-	private readonly RedisService _redisService;
-
-	public SetTypeController(RedisService redisService)
-	{
-		_redisService = redisService;
-		_db = redisService.GetDb(2);
-	}
+	public SetTypeController(RedisService redisService) : base(redisService) { }
 
 	public IActionResult Index()
 	{
-		HashSet<string> namesList = new HashSet<string>();
-		if (_db.KeyExists(listKey))
-			_db.SetMembers(listKey).ToList().ForEach(x => namesList.Add(x));
+		HashSet<string> namesList = new ();
+		if (db.KeyExists(listKey))
+			db.SetMembers(listKey).ToList().ForEach(x => namesList.Add(x.ToString()));
 
 		return View(namesList);
 	}
@@ -34,15 +25,15 @@ public class SetTypeController : Controller
 	[HttpPost]
 	public IActionResult Add(string name)
 	{
-		_db.KeyExpire(listKey, DateTime.Now.AddMinutes(3));
-		_db.SetAdd(listKey, name);
+		db.KeyExpire(listKey, DateTime.Now.AddMinutes(3));
+		db.SetAdd(listKey, name);
 
 		return RedirectToAction("index");
 	}
 
 	public async Task<IActionResult> DeleteItem(string name)
 	{
-		await _db.SetRemoveAsync(listKey, name);
+		await db.SetRemoveAsync(listKey, name);
 		return RedirectToAction("index");
 	}
 
