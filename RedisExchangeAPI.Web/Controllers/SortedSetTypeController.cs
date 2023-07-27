@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Linq;
+using StackExchange.Redis;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using RedisExchangeAPI.Web.Services;
@@ -8,10 +10,19 @@ using RedisExchangeAPI.Web.Services;
 namespace RedisExchangeAPI.Web.Controllers;
 
 
-public class SortedSetTypeController : BaseController
+public class SortedSetTypeController : Controller
 {
-	public string listKey = "SortedSetTypeName";
-	public SortedSetTypeController(RedisService redisService) : base(redisService) { }
+	private readonly RedisService _redisService;
+
+	private readonly IDatabase db;
+
+	private string listKey = "sortedsetnames";
+
+	public SortedSetTypeController(RedisService redisService)
+	{
+		_redisService = redisService;
+		db = _redisService.GetDb(3);
+	}
 
 	public IActionResult Index()
 	{
@@ -24,14 +35,12 @@ public class SortedSetTypeController : BaseController
 				list.Add(x.ToString());
 			});
 
+			// Score-a gore assending, descending duzulus
 			{
-				// Redisde olan SortedSet Datalarina Sirali sekilde baxmaq ucundu ( ASC, DSC )
-
-				// db.SortedSetRangeByRank(listKey, order: Order.Descending).ToList()
-				//  	.ForEach(x =>
-				//  	{
-				//  		list.Add(x.ToString());
-				//  	});
+				// db.SortedSetRangeByRank(listKey, 0, 5, order: Order.Descending).ToList().ForEach(x =>
+				// {
+				// 	list.Add(x.ToString());
+				// });
 			}
 		}
 
@@ -42,15 +51,15 @@ public class SortedSetTypeController : BaseController
 	public IActionResult Add(string name, int score)
 	{
 		db.SortedSetAdd(listKey, name, score);
-		db.KeyExpire(listKey, DateTime.Now.AddMinutes(2));
-
+		db.KeyExpire(listKey, DateTime.Now.AddMinutes(1));
 		return RedirectToAction("Index");
 	}
 
-	public IActionResult DeleteItem(string name)
+	public async Task<IActionResult> DeleteItem(string name)
 	{
-		db.SortedSetRemove(listKey, name);
+		await db.SortedSetRemoveAsync(listKey, name);
+
 		return RedirectToAction("Index");
 	}
-
 }
+
