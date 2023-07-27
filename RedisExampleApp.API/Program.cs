@@ -1,4 +1,3 @@
-using StackExchange.Redis;
 using RedisExampleApp.Cache;
 using RedisExampleApp.API.Models;
 using Microsoft.EntityFrameworkCore;
