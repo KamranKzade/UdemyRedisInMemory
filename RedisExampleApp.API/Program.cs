@@ -27,6 +27,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 	options.UseInMemoryDatabase("myDatabase");
 });
 
+// Appsettings de saxladigimiz port ve hostu aliriq ve Service-lere elave edirik
 builder.Services.AddSingleton<RedisService>(sp =>
 {
 	return new RedisService(builder.Configuration["CacheOptions:Url"]);

@@ -11,7 +11,10 @@ namespace RedisExampleApp.API.Controllers;
 [ApiController]
 public class ProductsController : ControllerBase
 {
+	// Redis Db - e catmaq ucun 
 	private readonly IDatabase _database;
+
+	// Productlardan istifade etmek ucun
 	private readonly IProductRepository _productRepository;
 
 
@@ -19,6 +22,7 @@ public class ProductsController : ControllerBase
 	{
 		_productRepository = productRepository;
 		_database = database;
+		// Redis db-e data yazmaq
 		_database.StringSet("soyad", "karimzada");
 	}
 
