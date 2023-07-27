@@ -1,8 +1,6 @@
-﻿using StackExchange.Redis;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using RedisExampleApp.API.Models;
-using RedisExampleApp.API.Repository;
-using RedisExampleApp.API.Services;
+using RedisExampleApp.API.Services.Abstract;
 
 namespace RedisExampleApp.API.Controllers;
 

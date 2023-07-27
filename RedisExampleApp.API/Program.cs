@@ -2,7 +2,9 @@ using RedisExampleApp.Cache;
 using RedisExampleApp.API.Models;
 using Microsoft.EntityFrameworkCore;
 using RedisExampleApp.API.Repository;
-using RedisExampleApp.API.Services;
+using RedisExampleApp.API.Repository.Abstract;
+using RedisExampleApp.API.Services.Abstract;
+using RedisExampleApp.API.Services.Concrete;
 
 var builder = WebApplication.CreateBuilder(args);
 
