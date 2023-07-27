@@ -11,6 +11,8 @@ namespace RedisExchangeAPI.Web.Controllers;
 
 public class SetTypeController : BaseController
 {
+	public string listKey = "SetTypeName";
+
 	public SetTypeController(RedisService redisService) : base(redisService) { }
 
 	public IActionResult Index()

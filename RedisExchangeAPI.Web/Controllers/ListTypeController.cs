@@ -9,6 +9,8 @@ namespace RedisExchangeAPI.Web.Controllers;
 
 public class ListTypeController : BaseController
 {
+	public string listKey = "ListTypeName";
+
 	public ListTypeController(RedisService redisService) : base(redisService) { }
 
 	public IActionResult Index()

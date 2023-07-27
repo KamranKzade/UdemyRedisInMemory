@@ -7,6 +7,8 @@ namespace RedisExchangeAPI.Web.Controllers;
 
 public class StringTypeController : BaseController
 {
+	public string listKey = "StringTypeName";
+
 	public StringTypeController(RedisService redisService) : base(redisService) { }
 
 	public IActionResult Index()

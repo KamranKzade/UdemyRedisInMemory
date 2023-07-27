@@ -10,6 +10,7 @@ namespace RedisExchangeAPI.Web.Controllers;
 
 public class SortedSetTypeController : BaseController
 {
+	public string listKey = "SortedSetTypeName";
 	public SortedSetTypeController(RedisService redisService) : base(redisService) { }
 
 	public IActionResult Index()
