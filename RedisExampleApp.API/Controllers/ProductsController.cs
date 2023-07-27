@@ -4,7 +4,6 @@ using RedisExampleApp.API.Services.Abstract;
 
 namespace RedisExampleApp.API.Controllers;
 
-
 [Route("api/[controller]")]
 [ApiController]
 public class ProductsController : ControllerBase
