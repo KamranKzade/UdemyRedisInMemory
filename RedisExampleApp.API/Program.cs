@@ -1,5 +1,7 @@
-using Microsoft.EntityFrameworkCore;
+using StackExchange.Redis;
+using RedisExampleApp.Cache;
 using RedisExampleApp.API.Models;
+using Microsoft.EntityFrameworkCore;
 using RedisExampleApp.API.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,11 +13,23 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// IDatabase e catmagin diger yolu
+// builder.Services.AddSingleton<IDatabase>(sp =>
+// {
+// 	var redisService = sp.GetRequiredService<RedisService>();
+// 	return redisService.GetDb(0);
+// });
+
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
 	options.UseInMemoryDatabase("myDatabase");
+});
+
+builder.Services.AddSingleton<RedisService>(sp =>
+{
+	return new RedisService(builder.Configuration["CacheOptions:Url"]);
 });
 
 var app = builder.Build();

@@ -12,7 +12,7 @@ public class AppDbContext : DbContext
 	{
 		modelBuilder.Entity<Product>()
 			.HasData(
-					new Product() { Id = 1, Name = "Kalem1",Price=100 },
+					new Product() { Id = 1, Name = "Kalem1", Price = 100 },
 					new Product() { Id = 2, Name = "Kalem2", Price = 150 },
 					new Product() { Id = 3, Name = "Kalem3", Price = 200 }
 					);
