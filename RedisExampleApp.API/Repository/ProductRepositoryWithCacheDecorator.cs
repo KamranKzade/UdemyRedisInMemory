@@ -23,7 +23,7 @@ public class ProductRepositoryWithCacheDecorator : IProductRepository
 	// Redis-de hansi db-de tutacagimizi gostermek ucun
 	private readonly IDatabase _cacheRepository;
 
-	public ProductRepositoryWithCacheDecorator(RedisService service, IProductRepository repository, IDatabase cacheRepository)
+	public ProductRepositoryWithCacheDecorator(RedisService service, IProductRepository repository)
 	{
 		_service = service;
 		_repository = repository;

@@ -2,6 +2,7 @@ using RedisExampleApp.Cache;
 using RedisExampleApp.API.Models;
 using Microsoft.EntityFrameworkCore;
 using RedisExampleApp.API.Repository;
+using RedisExampleApp.API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,7 +20,17 @@ builder.Services.AddSwaggerGen();
 // 	return redisService.GetDb(0);
 // });
 
-builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<IProductRepository>(sp =>
+{
+	var appDbContext = sp.GetRequiredService<AppDbContext>();
+
+	var productRepo = new ProductRepository(appDbContext);
+	var redisService = sp.GetRequiredService<RedisService>();
+
+	return new ProductRepositoryWithCacheDecorator(redisService, productRepo);
+});
+
+builder.Services.AddScoped<IProductService, ProductService>();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
