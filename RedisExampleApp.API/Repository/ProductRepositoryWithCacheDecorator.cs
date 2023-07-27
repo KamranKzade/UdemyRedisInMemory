@@ -1,7 +1,8 @@
-﻿using RedisExampleApp.Cache;
-using RedisExampleApp.API.Models;
+﻿using System.Text.Json;
 using StackExchange.Redis;
-using System.Text.Json;
+using RedisExampleApp.Cache;
+using RedisExampleApp.API.Models;
+
 
 namespace RedisExampleApp.API.Repository;
 
@@ -32,7 +33,6 @@ public class ProductRepositoryWithCacheDecorator : IProductRepository
 	public async Task<Product> CreateAsync(Product product)
 	{
 		var newproduct = await _repository.CreateAsync(product);
-
 
 		// Sualli olan hisse
 		if (await _cacheRepository.KeyExistsAsync(productKey))
@@ -79,7 +79,6 @@ public class ProductRepositoryWithCacheDecorator : IProductRepository
 	private async Task<List<Product>> LoadToCacheFromDbAsync()
 	{
 		var products = await _repository.GetAsync();
-
 
 		// Gelen Productlari Cache-leyeceyik
 		products.ForEach(p =>
