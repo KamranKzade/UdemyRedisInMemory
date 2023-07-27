@@ -15,13 +15,13 @@ public class SortedSetTypeController : Controller
 	private string listKey = "SortedSetname";
 	private readonly RedisService _redisService;
 
+
 	public SortedSetTypeController(RedisService redisService)
 	{
 		_redisService = redisService;
-
-		// Daim eyni Db ile isleyeceyikse eger, contructorda yaziriq
 		db = redisService.GetDb(3);
 	}
+
 
 	public IActionResult Index()
 	{
@@ -29,16 +29,20 @@ public class SortedSetTypeController : Controller
 
 		if (db.KeyExists(listKey))
 		{
-			//	Sdb.SortedSetScan(listKey).ToList().ForEach(x =>
-			//	S{
-			//	S	list.Add(x.ToString());
-			//	S});
+			db.SortedSetScan(listKey).ToList().ForEach(x =>
+			{
+				list.Add(x.ToString());
+			});
 
-			db.SortedSetRangeByRank(listKey, order: Order.Descending).ToList()
-				.ForEach(x =>
-				{
-					list.Add(x.ToString());
-				});
+			{
+				// Redisde olan SortedSet Datalarina Sirali sekilde baxmaq ucundu ( ASC, DSC )
+
+				// db.SortedSetRangeByRank(listKey, order: Order.Descending).ToList()
+				//  	.ForEach(x =>
+				//  	{
+				//  		list.Add(x.ToString());
+				//  	});
+			}
 		}
 
 		return View(list);
@@ -55,8 +59,8 @@ public class SortedSetTypeController : Controller
 
 	public IActionResult DeleteItem(string name)
 	{
-		db.SortedSetRemove(listKey,name);
-
+		db.SortedSetRemove(listKey, name);
 		return RedirectToAction("Index");
 	}
+
 }
